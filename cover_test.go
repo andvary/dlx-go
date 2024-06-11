@@ -283,10 +283,10 @@ func TestFindBestItem(t *testing.T) {
 func TestRestoreItems(t *testing.T) {
 	d := &DLX{
 		items: []*item{
-			{name: "", prev: 4, next: 2},          //0
+			{name: "", prev: 4, next: 3},          //0
 			{name: "a", prev: 0, next: 2, cnt: 2}, //1	x
-			{name: "b", prev: 0, next: 3, cnt: 2}, //2
-			{name: "c", prev: 2, next: 4, cnt: 2}, //3
+			{name: "b", prev: 0, next: 3, cnt: 2}, //2	x
+			{name: "c", prev: 0, next: 4, cnt: 2}, //3
 			{name: "d", prev: 3, next: 0, cnt: 3}, //4
 			{name: "e", prev: 4, next: 0, cnt: 2}, //5	x
 			{name: "f", prev: 5, next: 0, cnt: 2}, //6	x
@@ -305,7 +305,7 @@ func TestRestoreItems(t *testing.T) {
 		{name: "g", prev: 6, next: 0, cnt: 3}, //7
 	}
 
-	removedItems := []int{1, 7, 6, 5}
+	removedItems := []int{1, 7, 6, 5, 2}
 	d.restoreItems(removedItems)
 
 	if diff := cmp.Diff(want, d.items, cmp.AllowUnexported(item{})); diff != "" {
