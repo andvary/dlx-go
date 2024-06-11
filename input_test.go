@@ -25,37 +25,37 @@ func TestReadInput(t *testing.T) {
 			{name: "g", prev: 6, next: 0, cnt: 3}, //7
 		},
 		opts: []*opt{
-			{
+			{ //0
 				prev:  6,
 				next:  1,
 				items: nil,
 			},
-			{
+			{ //2
 				prev:  0,
 				next:  2,
 				items: map[int]struct{}{3: {}, 5: {}, 6: {}},
 			},
-			{
+			{ //2
 				prev:  1,
 				next:  3,
 				items: map[int]struct{}{1: {}, 4: {}, 7: {}},
 			},
-			{
+			{ //3
 				prev:  2,
 				next:  4,
 				items: map[int]struct{}{2: {}, 3: {}, 6: {}},
 			},
-			{
+			{ //4
 				prev:  3,
 				next:  5,
 				items: map[int]struct{}{1: {}, 4: {}},
 			},
-			{
+			{ //5
 				prev:  4,
 				next:  6,
 				items: map[int]struct{}{2: {}, 7: {}},
 			},
-			{
+			{ //6
 				prev:  5,
 				next:  0,
 				items: map[int]struct{}{4: {}, 5: {}, 7: {}},

@@ -2,6 +2,7 @@ package mydlx
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -26,6 +27,10 @@ OPTIONS:
 
 		// запишем опцию, как потенциальную часть решения
 		d.potentialSolution = append(d.potentialSolution, i)
+		fmt.Print("starting with option: ")
+		d.printOption(i)
+		fmt.Println("potential solution:", d.potentialSolution)
+		d.dump()
 
 		// удалим все итемы, покрытые опцией
 		for j := range d.opts[i].items {
@@ -49,8 +54,17 @@ OPTIONS:
 
 		// если список итемов пуст, решение найдено, проверим другие опции
 		if d.items[0].next == 0 {
+			fmt.Println("solution found:")
+			for _, op := range d.potentialSolution {
+				d.printOption(op)
+			}
 			d.solutions = append(d.solutions, d.potentialSolution)
-			// TODO: uncover
+
+			d.restoreOptions(removedOpts)
+			d.restoreItems(removedItems)
+			removedItems = removedItems[:0]
+			removedOpts = removedOpts[:0]
+
 			// убираем из потенциального решения только текущую опцию
 			d.potentialSolution = d.potentialSolution[:len(d.potentialSolution)-1]
 			continue OPTIONS
@@ -59,14 +73,39 @@ OPTIONS:
 		// если есть неудалённые итемы без опций, значит решения нет
 		for it := d.items[0].next; it != 0; it = d.items[it].next {
 			if d.items[it].cnt == 0 {
-				// TODO: тупик, uncover
+				fmt.Println("empty item found, uncover and try another option")
+				fmt.Println("potential solution:", d.potentialSolution)
+				d.dump()
+				fmt.Println("↓ ↓ ↓")
+
+				d.restoreOptions(removedOpts)
+				d.restoreItems(removedItems)
+				removedItems = removedItems[:0]
+				removedOpts = removedOpts[:0]
+
 				// убираем из потенциального решения только текущую опцию
 				d.potentialSolution = d.potentialSolution[:len(d.potentialSolution)-1]
+				d.dump()
 				continue OPTIONS
 			}
 		}
 
-		return d.cover(d.findBestItem())
+		fmt.Println("recursing")
+		fmt.Println("potential solution:", d.potentialSolution)
+		if err := d.cover(d.findBestItem()); err != nil {
+			return err
+		}
+
+		d.potentialSolution = d.potentialSolution[:len(d.potentialSolution)-1]
+		fmt.Println("done recursing, uncover and try another option")
+		fmt.Println("potential solution:", d.potentialSolution)
+		d.dump()
+		fmt.Println("↓ ↓ ↓")
+		d.restoreOptions(removedOpts)
+		d.restoreItems(removedItems)
+		removedItems = removedItems[:0]
+		removedOpts = removedOpts[:0]
+		d.dump()
 	}
 
 	return nil
@@ -75,6 +114,15 @@ OPTIONS:
 func (d *DLX) restoreItems(ri []int) {
 	for i := len(ri) - 1; i >= 0; i-- {
 		d.items[d.items[ri[i]].next].prev, d.items[d.items[ri[i]].prev].next = ri[i], ri[i]
+	}
+}
+
+func (d *DLX) restoreOptions(ro []int) {
+	for i := len(ro) - 1; i >= 0; i-- {
+		d.opts[d.opts[ro[i]].next].prev, d.opts[d.opts[ro[i]].prev].next = ro[i], ro[i]
+		for j := range d.opts[i].items {
+			d.items[j].cnt++
+		}
 	}
 }
 
@@ -135,5 +183,19 @@ func (d *DLX) printOption(i int) {
 		items = append(items, d.items[j].name)
 	}
 
-	fmt.Println(strings.Join(items, "-"))
+	sort.Strings(items)
+	fmt.Println(strings.Join(items, " "))
+}
+
+func (d *DLX) dump() {
+	var items []string
+	for i := d.items[0].next; i != 0; i = d.items[i].next {
+		items = append(items, d.items[i].name)
+	}
+	sort.Strings(items)
+	fmt.Println(strings.Join(items, " "))
+
+	for i := d.opts[0].next; i != 0; i = d.opts[i].next {
+		d.printOption(i)
+	}
 }

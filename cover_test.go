@@ -3,6 +3,7 @@ package mydlx
 import (
 	"errors"
 	"github.com/google/go-cmp/cmp"
+	"sort"
 	"strconv"
 	"testing"
 )
@@ -191,70 +192,20 @@ func TestCover(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := &DLX{
-		items: []*item{
-			{name: "", prev: 6, next: 2},          //0
-			{name: "a", prev: 0, next: 2, cnt: 0}, //1 x
-			{name: "b", prev: 0, next: 3, cnt: 1}, //2
-			{name: "c", prev: 2, next: 5, cnt: 2}, //3
-			{name: "d", prev: 3, next: 5, cnt: 0}, //4 x
-			{name: "e", prev: 3, next: 6, cnt: 1}, //5
-			{name: "f", prev: 5, next: 0, cnt: 2}, //6
-			{name: "g", prev: 6, next: 0, cnt: 0}, //7 x
-		},
-		opts: []*opt{
-			{ //0
-				prev:  3,
-				next:  1,
-				items: nil,
-			},
-			{ //1
-				prev:  0,
-				next:  3,
-				items: map[int]struct{}{3: {}, 5: {}, 6: {}},
-			},
-			{ //2
-				prev:  1,
-				next:  3,
-				items: map[int]struct{}{1: {}, 4: {}, 7: {}}, //x
-			},
-			{ //3
-				prev:  1,
-				next:  0,
-				items: map[int]struct{}{2: {}, 3: {}, 6: {}},
-			},
-			{ //4
-				prev:  3,
-				next:  5,
-				items: map[int]struct{}{1: {}, 4: {}}, //x
-			},
-			{ //5
-				prev:  4,
-				next:  6,
-				items: map[int]struct{}{2: {}, 7: {}}, //x
-			},
-			{ //6
-				prev:  5,
-				next:  0,
-				items: map[int]struct{}{4: {}, 5: {}, 7: {}}, //x
-			},
-		},
-	}
-
 	if err := d.cover(1); err != nil {
 		t.Fatal(err)
 	}
 
-	if diff := cmp.Diff(want.items, d.items, cmp.AllowUnexported(item{})); diff != "" {
-		t.Errorf("want items mismatch(-want +got):\n%s", diff)
+	want := [][]int{
+		{1, 4, 5},
 	}
 
-	// Сравниваем только состояние неудалённых опций, т.к. удаляются они не всегда в одном и том же порядке,
-	// соответственно, указатели в них могут отличаться от теста к тесту.
-	for i := d.opts[0].next; i != 0; i = d.opts[i].next {
-		if diff := cmp.Diff(want.opts[i], d.opts[i], cmp.AllowUnexported(opt{})); diff != "" {
-			t.Errorf("want options mismatch(-want +got):\n%s", diff)
-		}
+	for i := range d.solutions {
+		sort.Ints(d.solutions[i])
+	}
+
+	if diff := cmp.Diff(want, d.solutions); diff != "" {
+		t.Errorf("want items mismatch(-want +got):\n%s", diff)
 	}
 }
 
@@ -283,11 +234,11 @@ func TestFindBestItem(t *testing.T) {
 func TestRestoreItems(t *testing.T) {
 	d := &DLX{
 		items: []*item{
-			{name: "", prev: 4, next: 3},          //0
+			{name: "", prev: 0, next: 0},          //0
 			{name: "a", prev: 0, next: 2, cnt: 2}, //1	x
 			{name: "b", prev: 0, next: 3, cnt: 2}, //2	x
-			{name: "c", prev: 0, next: 4, cnt: 2}, //3
-			{name: "d", prev: 3, next: 0, cnt: 3}, //4
+			{name: "c", prev: 0, next: 0, cnt: 2}, //3	x
+			{name: "d", prev: 3, next: 0, cnt: 3}, //4	x
 			{name: "e", prev: 4, next: 0, cnt: 2}, //5	x
 			{name: "f", prev: 5, next: 0, cnt: 2}, //6	x
 			{name: "g", prev: 6, next: 0, cnt: 3}, //7	x
@@ -305,7 +256,41 @@ func TestRestoreItems(t *testing.T) {
 		{name: "g", prev: 6, next: 0, cnt: 3}, //7
 	}
 
-	removedItems := []int{1, 7, 6, 5, 2}
+	removedItems := []int{1, 7, 6, 5, 2, 4, 3}
+	d.restoreItems(removedItems)
+
+	if diff := cmp.Diff(want, d.items, cmp.AllowUnexported(item{})); diff != "" {
+		t.Errorf("want items mismatch(-want +got):\n%s", diff)
+	}
+
+}
+
+func TestRestoreItems2(t *testing.T) {
+	d := &DLX{
+		items: []*item{
+			{name: "", prev: 6, next: 4},          //0
+			{name: "a", prev: 0, next: 2, cnt: 2}, //1	xx
+			{name: "b", prev: 0, next: 3, cnt: 2}, //2	x
+			{name: "c", prev: 0, next: 4, cnt: 2}, //3	x
+			{name: "d", prev: 0, next: 6, cnt: 3}, //4
+			{name: "e", prev: 4, next: 6, cnt: 2}, //5	xx
+			{name: "f", prev: 4, next: 0, cnt: 2}, //6
+			{name: "g", prev: 6, next: 0, cnt: 3}, //7	x
+		},
+	}
+
+	want := []*item{
+		{name: "", prev: 7, next: 2},          //0
+		{name: "a", prev: 0, next: 2, cnt: 2}, //1	xx
+		{name: "b", prev: 0, next: 3, cnt: 2}, //2
+		{name: "c", prev: 2, next: 4, cnt: 2}, //3
+		{name: "d", prev: 3, next: 6, cnt: 3}, //4
+		{name: "e", prev: 4, next: 6, cnt: 2}, //5	xx
+		{name: "f", prev: 4, next: 7, cnt: 2}, //6
+		{name: "g", prev: 6, next: 0, cnt: 3}, //7
+	}
+
+	removedItems := []int{2, 3, 7}
 	d.restoreItems(removedItems)
 
 	if diff := cmp.Diff(want, d.items, cmp.AllowUnexported(item{})); diff != "" {
