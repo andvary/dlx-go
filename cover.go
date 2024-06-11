@@ -1,6 +1,9 @@
 package mydlx
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // cover пытается найти решение следующим образом:
 // Для каждой опции итема
@@ -118,4 +121,13 @@ func (d *DLX) findBestItem() int {
 	}
 
 	return best
+}
+
+func (d *DLX) printOption(i int) {
+	var items []string
+	for j := range d.opts[i].items {
+		items = append(items, d.items[j].name)
+	}
+
+	fmt.Println(strings.Join(items, "-"))
 }
