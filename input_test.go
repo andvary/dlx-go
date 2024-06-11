@@ -30,7 +30,7 @@ func TestReadInput(t *testing.T) {
 				next:  1,
 				items: nil,
 			},
-			{ //2
+			{ //1
 				prev:  0,
 				next:  2,
 				items: map[int]struct{}{3: {}, 5: {}, 6: {}},
