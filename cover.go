@@ -72,6 +72,12 @@ OPTIONS:
 	return nil
 }
 
+func (d *DLX) restoreItems(ri []int) {
+	for i := len(ri) - 1; i >= 0; i-- {
+		d.items[d.items[ri[i]].next].prev, d.items[d.items[ri[i]].prev].next = ri[i], ri[i]
+	}
+}
+
 // removeItem удаляет итем из связанного списка опций (но не из массива), только перезаписывая указатели
 // соседних итемов, но не меня указатели самого итема для его последующего восстановления.
 func (d *DLX) removeItem(i int) error {

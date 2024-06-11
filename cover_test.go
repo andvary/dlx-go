@@ -279,3 +279,37 @@ func TestFindBestItem(t *testing.T) {
 		t.Fatalf("ожидали: %d, получили: %d", want, got)
 	}
 }
+
+func TestRestoreItems(t *testing.T) {
+	d := &DLX{
+		items: []*item{
+			{name: "", prev: 5, next: 2},          //0
+			{name: "a", prev: 0, next: 2, cnt: 2}, //1	x
+			{name: "b", prev: 0, next: 3, cnt: 2}, //2
+			{name: "c", prev: 2, next: 4, cnt: 2}, //3
+			{name: "d", prev: 3, next: 5, cnt: 3}, //4
+			{name: "e", prev: 4, next: 0, cnt: 2}, //5
+			{name: "f", prev: 5, next: 0, cnt: 2}, //6	x
+			{name: "g", prev: 6, next: 0, cnt: 3}, //7	x
+		},
+	}
+
+	want := []*item{
+		{name: "", prev: 7, next: 1},          //0
+		{name: "a", prev: 0, next: 2, cnt: 2}, //1
+		{name: "b", prev: 1, next: 3, cnt: 2}, //2
+		{name: "c", prev: 2, next: 4, cnt: 2}, //3
+		{name: "d", prev: 3, next: 5, cnt: 3}, //4
+		{name: "e", prev: 4, next: 6, cnt: 2}, //5
+		{name: "f", prev: 5, next: 7, cnt: 2}, //6
+		{name: "g", prev: 6, next: 0, cnt: 3}, //7
+	}
+
+	removedItems := []int{1, 7, 6}
+	d.restoreItems(removedItems)
+
+	if diff := cmp.Diff(want, d.items, cmp.AllowUnexported(item{})); diff != "" {
+		t.Errorf("want items mismatch(-want +got):\n%s", diff)
+	}
+
+}
