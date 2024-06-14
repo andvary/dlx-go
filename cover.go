@@ -2,8 +2,6 @@ package mydlx
 
 import (
 	"fmt"
-	"sort"
-	"strings"
 )
 
 // cover пытается найти решение следующим образом:
@@ -27,8 +25,9 @@ OPTIONS:
 
 		// запишем опцию, как потенциальную часть решения
 		d.potentialSolution = append(d.potentialSolution, i)
+		d.log(fmt.Sprintf("starting with option: "))
 		fmt.Print("starting with option: ")
-		d.printOption(i)
+		fmt.Println(d.dumpOptions(i))
 		fmt.Println("potential solution:", d.potentialSolution)
 		d.dump()
 
@@ -55,9 +54,8 @@ OPTIONS:
 		// если список итемов пуст, решение найдено, проверим другие опции
 		if d.items[0].next == 0 {
 			fmt.Println("solution found:")
-			for _, op := range d.potentialSolution {
-				d.printOption(op)
-			}
+			fmt.Println(d.dumpOptions(d.potentialSolution...))
+
 			d.solutions = append(d.solutions, d.potentialSolution)
 
 			d.restoreOptions(removedOpts)
@@ -175,27 +173,4 @@ func (d *DLX) findBestItem() int {
 	}
 
 	return best
-}
-
-func (d *DLX) printOption(i int) {
-	var items []string
-	for j := range d.opts[i].items {
-		items = append(items, d.items[j].name)
-	}
-
-	sort.Strings(items)
-	fmt.Println(strings.Join(items, " "))
-}
-
-func (d *DLX) dump() {
-	var items []string
-	for i := d.items[0].next; i != 0; i = d.items[i].next {
-		items = append(items, d.items[i].name)
-	}
-	sort.Strings(items)
-	fmt.Println(strings.Join(items, " "))
-
-	for i := d.opts[0].next; i != 0; i = d.opts[i].next {
-		d.printOption(i)
-	}
 }
