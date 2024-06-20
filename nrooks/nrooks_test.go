@@ -6,8 +6,8 @@ import (
 )
 
 func TestNRooks(t *testing.T) {
-	m := prepareMatrix()
-	d, err := dlx.New(m)
+	m := prepareMatrix(2, 2)
+	d, err := dlx.New(m, dlx.EnableDebugging())
 	if err != nil {
 		t.Fatal(err)
 	}

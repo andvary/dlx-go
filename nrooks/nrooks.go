@@ -2,20 +2,27 @@ package nrooks
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"strings"
 )
 
-func prepareMatrix() io.Reader {
+func prepareMatrix(x, y int) io.Reader {
 	var bb bytes.Buffer
 
-	items := []string{"x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "y1", "y2", "y3", "y4", "y5", "y6", "y7", "y8"}
+	items := make([]string, 0, x+y)
+	for i := 1; i <= x; i++ {
+		items = append(items, fmt.Sprintf("x%d", i))
+	}
+	for i := 1; i <= y; i++ {
+		items = append(items, fmt.Sprintf("y%d", i))
+	}
 
 	bb.WriteString(strings.Join(items, " "))
 	bb.WriteByte('\n')
 
-	for i := 0; i < 8; i++ {
-		for j := 8; j < len(items); j++ {
+	for i := 0; i < x; i++ {
+		for j := x; j < len(items); j++ {
 			bb.WriteString(items[i])
 			bb.WriteByte(' ')
 			bb.WriteString(items[j])

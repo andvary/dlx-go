@@ -51,8 +51,8 @@ OPTIONS:
 		if d.items[0].next == 0 {
 
 			d.log("solution found")
+			d.addSolution()
 
-			d.solutions = append(d.solutions, d.potentialSolution)
 			d.restoreOptions(removedOpts)
 			d.restoreItems(removedItems)
 			removedItems = removedItems[:0]
@@ -163,4 +163,10 @@ func (d *DLX) findBestItem() int {
 	}
 
 	return best
+}
+
+func (d *DLX) addSolution() {
+	s := make([]int, len(d.potentialSolution))
+	copy(s, d.potentialSolution)
+	d.solutions = append(d.solutions, s)
 }
