@@ -25,12 +25,14 @@ OPTIONS:
 
 		// запишем опцию, как потенциальную часть решения
 		d.potentialSolution = append(d.potentialSolution, i)
-		d.log(fmt.Sprintf("starting with option: "))
-		fmt.Print("starting with option: ")
-		fmt.Println(d.dumpOptions(i))
-		fmt.Println("potential solution:", d.potentialSolution)
-		d.dump()
+		/*		d.log(fmt.Sprintf("starting with option: "))
+				fmt.Print("starting with option: ")
+				fmt.Println(d.dumpOptions(i))
+				fmt.Println("potential solution:", d.potentialSolution)
+				d.dump()
+		*/
 
+		d.log("starting with option: " + d.dumpOptions(i))
 		// удалим все итемы, покрытые опцией
 		for j := range d.opts[i].items {
 			if err := d.removeItem(j); err != nil {
@@ -53,8 +55,9 @@ OPTIONS:
 
 		// если список итемов пуст, решение найдено, проверим другие опции
 		if d.items[0].next == 0 {
-			fmt.Println("solution found:")
-			fmt.Println(d.dumpOptions(d.potentialSolution...))
+			/*			fmt.Println("solution found:")
+						fmt.Println(d.dumpOptions(d.potentialSolution...))*/
+			d.log("solution found")
 
 			d.solutions = append(d.solutions, d.potentialSolution)
 
@@ -71,10 +74,11 @@ OPTIONS:
 		// если есть неудалённые итемы без опций, значит решения нет
 		for it := d.items[0].next; it != 0; it = d.items[it].next {
 			if d.items[it].cnt == 0 {
-				fmt.Println("empty item found, uncover and try another option")
-				fmt.Println("potential solution:", d.potentialSolution)
-				d.dump()
-				fmt.Println("↓ ↓ ↓")
+				/*				fmt.Println("empty item found, uncover and try another option")
+								fmt.Println("potential solution:", d.potentialSolution)
+								d.dump()
+								fmt.Println("↓ ↓ ↓")*/
+				d.log("empty item found, uncover and try another option")
 
 				d.restoreOptions(removedOpts)
 				d.restoreItems(removedItems)
@@ -88,22 +92,23 @@ OPTIONS:
 			}
 		}
 
-		fmt.Println("recursing")
-		fmt.Println("potential solution:", d.potentialSolution)
+		/*		fmt.Println("recursing")
+				fmt.Println("potential solution:", d.potentialSolution)*/
+		d.log("recursing")
 		if err := d.cover(d.findBestItem()); err != nil {
 			return err
 		}
 
 		d.potentialSolution = d.potentialSolution[:len(d.potentialSolution)-1]
-		fmt.Println("done recursing, uncover and try another option")
-		fmt.Println("potential solution:", d.potentialSolution)
-		d.dump()
-		fmt.Println("↓ ↓ ↓")
+		d.log("done recursing, uncover and try another option")
+		/*	fmt.Println("done recursing, uncover and try another option")
+			fmt.Println("potential solution:", d.potentialSolution)
+			d.dump()
+			fmt.Println("↓ ↓ ↓")*/
 		d.restoreOptions(removedOpts)
 		d.restoreItems(removedItems)
 		removedItems = removedItems[:0]
 		removedOpts = removedOpts[:0]
-		d.dump()
 	}
 
 	return nil

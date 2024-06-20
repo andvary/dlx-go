@@ -7,10 +7,12 @@ import (
 )
 
 // log выводит в консоль отладочную информацию. Не используем специализированные пакеты для логирования,
-// т.к. нам нужно печатать многострочный вывод, с которым они не справляются.
-func (d *DLX) log(f func() string) {
+// т.к. нужно печатать многострочный вывод, с которым они не справляются.
+func (d *DLX) log(msg string) {
 	if d.debug {
-		fmt.Print(f())
+		fmt.Println(msg)
+		fmt.Println("potential solution: ", d.potentialSolution)
+		fmt.Println(d.dump())
 	}
 }
 
@@ -40,9 +42,11 @@ func (d *DLX) dump() string {
 	}
 	sort.Strings(items)
 	b.Write([]byte(strings.Join(items, " ")))
+	b.WriteByte('\n')
 
 	for i := d.opts[0].next; i != 0; i = d.opts[i].next {
 		b.Write([]byte(d.dumpOptions(i)))
+		b.WriteByte('\n')
 	}
 
 	return b.String()

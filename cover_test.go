@@ -186,7 +186,7 @@ func TestRemoveOption(t *testing.T) {
 }
 
 func TestCover(t *testing.T) {
-	d := &DLX{}
+	d := &DLX{debug: true}
 
 	if err := d.readInput("./testdata/input_good_3.txt"); err != nil {
 		t.Fatal(err)
