@@ -1,4 +1,4 @@
-module dlx_my
+module dlx
 
 go 1.21
 

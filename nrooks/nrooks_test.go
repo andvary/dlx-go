@@ -1,7 +1,7 @@
 package nrooks
 
 import (
-	dlx "dlx_my"
+	"dlx"
 	"testing"
 )
 
