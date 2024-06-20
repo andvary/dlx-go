@@ -1,6 +1,9 @@
-package mydlx
+package dlx
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+)
 
 type opt struct {
 	prev  int
@@ -25,9 +28,9 @@ type DLX struct {
 	debug bool
 }
 
-func NewFromFile(path string, opts ...func(dlx *DLX)) (*DLX, error) {
+func New(r io.Reader, opts ...func(dlx *DLX)) (*DLX, error) {
 	d := &DLX{}
-	if err := d.readInput(path); err != nil {
+	if err := d.readInput(r); err != nil {
 		return nil, err
 	}
 

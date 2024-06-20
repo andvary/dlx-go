@@ -1,8 +1,9 @@
-package mydlx
+package dlx
 
 import (
 	"errors"
 	"github.com/google/go-cmp/cmp"
+	"os"
 	"sort"
 	"strconv"
 	"testing"
@@ -120,9 +121,15 @@ func TestRemoveItem_Bad(t *testing.T) {
 }
 
 func TestRemoveOption(t *testing.T) {
+	f, err := os.OpenFile("./testdata/input_good_3.txt", os.O_RDONLY, 0111)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
 	d := &DLX{}
 
-	if err := d.readInput("./testdata/input_good_3.txt"); err != nil {
+	if err := d.readInput(f); err != nil {
 		t.Fatal(err)
 	}
 
@@ -186,9 +193,15 @@ func TestRemoveOption(t *testing.T) {
 }
 
 func TestCover(t *testing.T) {
-	d := &DLX{debug: true}
+	f, err := os.OpenFile("./testdata/input_good_3.txt", os.O_RDONLY, 0111)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
 
-	if err := d.readInput("./testdata/input_good_3.txt"); err != nil {
+	d := &DLX{}
+
+	if err := d.readInput(f); err != nil {
 		t.Fatal(err)
 	}
 

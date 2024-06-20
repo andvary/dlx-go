@@ -1,15 +1,22 @@
-package mydlx
+package dlx
 
 import (
 	"errors"
 	"github.com/google/go-cmp/cmp"
+	"os"
 	"testing"
 )
 
 func TestReadInput(t *testing.T) {
+	f, err := os.OpenFile("./testdata/input_good_3.txt", os.O_RDONLY, 0111)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
 	d := &DLX{}
 
-	if err := d.readInput("./testdata/input_good_3.txt"); err != nil {
+	if err := d.readInput(f); err != nil {
 		t.Fatal(err)
 	}
 
@@ -78,7 +85,12 @@ func TestReadInputBad(t *testing.T) {
 	d := &DLX{}
 
 	for i := range inputs {
-		err := d.readInput(inputs[i])
+		f, err := os.OpenFile(inputs[i], os.O_RDONLY, 0111)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = d.readInput(f)
 		if err == nil {
 			t.Errorf("функция не вернула ошибку для некорректных входных данных, файл %q", inputs[i])
 		}
@@ -86,6 +98,6 @@ func TestReadInputBad(t *testing.T) {
 		if !errors.As(err, &InputError{}) {
 			t.Errorf("ожидали ошибку типа InputError, получили: %v", err)
 		}
-
+		f.Close()
 	}
 }

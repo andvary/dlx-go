@@ -1,24 +1,18 @@
-package mydlx
+package dlx
 
 import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"os"
+	"io"
 )
 
-func (d *DLX) readInput(p string) error {
-	f, err := os.OpenFile(p, os.O_RDONLY, 0111)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
+func (d *DLX) readInput(r io.Reader) error {
 	var firstLine = true
 	d.opts = make([]*opt, 0)
 	d.opts = append(d.opts, &opt{})
 
-	s := bufio.NewScanner(f)
+	s := bufio.NewScanner(r)
 	for s.Scan() {
 		bb := bytes.Fields(bytes.TrimSpace(s.Bytes()))
 		// пропускаем пустые строки
