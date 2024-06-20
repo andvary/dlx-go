@@ -32,10 +32,24 @@ func (d *DLX) dumpOptions(opts ...int) string {
 	return b.String()[0 : b.Len()-1]
 }
 
+func (d *DLX) dumpItems() string {
+	b := strings.Builder{}
+	b.WriteString("items: ")
+	for i := d.items[0].next; i != 0; i = d.items[i].next {
+		b.WriteString(fmt.Sprintf("{%s: p: %d, n: %d, cnt: %d} ", d.items[i].name, d.items[i].prev,
+			d.items[i].next, d.items[i].cnt))
+	}
+	return b.String()
+}
+
 // dump возвращает строковое представление текущего состояния матрицы (без удалённых итемов и опций)
 // Элементы будут отсортированы по возрастанию.
 func (d *DLX) dump() string {
 	b := strings.Builder{}
+
+	b.WriteString(d.dumpItems())
+	b.WriteByte('\n')
+
 	var items []string
 	for i := d.items[0].next; i != 0; i = d.items[i].next {
 		items = append(items, d.items[i].name)

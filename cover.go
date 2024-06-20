@@ -60,6 +60,8 @@ OPTIONS:
 
 			// убираем из потенциального решения только текущую опцию
 			d.potentialSolution = d.potentialSolution[:len(d.potentialSolution)-1]
+
+			d.log("uncovered after finding a solution")
 			continue OPTIONS
 		}
 
@@ -67,7 +69,7 @@ OPTIONS:
 		for it := d.items[0].next; it != 0; it = d.items[it].next {
 			if d.items[it].cnt == 0 {
 
-				d.log("empty item found, uncover and try another option")
+				d.log(fmt.Sprintf("empty item %v found, dead end", d.items[it]))
 
 				d.restoreOptions(removedOpts)
 				d.restoreItems(removedItems)
@@ -76,7 +78,8 @@ OPTIONS:
 
 				// убираем из потенциального решения только текущую опцию
 				d.potentialSolution = d.potentialSolution[:len(d.potentialSolution)-1]
-				d.dump()
+				d.log("uncovered after dead end")
+
 				continue OPTIONS
 			}
 		}
@@ -88,12 +91,13 @@ OPTIONS:
 		}
 		d.potentialSolution = d.potentialSolution[:len(d.potentialSolution)-1]
 
-		d.log("done recursing, uncover and try another option")
-
+		d.log("done recursing")
 		d.restoreOptions(removedOpts)
 		d.restoreItems(removedItems)
 		removedItems = removedItems[:0]
 		removedOpts = removedOpts[:0]
+
+		d.log("uncovered after recursing")
 	}
 
 	return nil
@@ -108,7 +112,7 @@ func (d *DLX) restoreItems(ri []int) {
 func (d *DLX) restoreOptions(ro []int) {
 	for i := len(ro) - 1; i >= 0; i-- {
 		d.opts[d.opts[ro[i]].next].prev, d.opts[d.opts[ro[i]].prev].next = ro[i], ro[i]
-		for j := range d.opts[i].items {
+		for j := range d.opts[ro[i]].items {
 			d.items[j].cnt++
 		}
 	}

@@ -6,13 +6,18 @@ import (
 )
 
 func TestNRooks(t *testing.T) {
-	m := prepareMatrix(2, 2)
-	d, err := dlx.New(m, dlx.EnableDebugging())
+	m := prepareMatrix(8, 8)
+	d, err := dlx.New(m)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if err := d.PrintSolutions(4); err != nil {
+	solutions, err := d.Solve()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(solutions) != 40320 {
 		t.Fatal(err)
 	}
 }
