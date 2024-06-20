@@ -1,9 +1,11 @@
 package nrooks
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -33,6 +35,61 @@ func prepareMatrix(x, y int) io.Reader {
 	return &bb
 }
 
-func printBoard(s []int, reader io.Reader) {
+func printBoard(x, y int, solutions [][]int, r io.Reader) {
+	board := make([][]byte, y)
 
+	for i := range board {
+		row := make([]byte, x)
+		for j := range row {
+			row[j] = '.'
+		}
+		board[i] = row
+	}
+
+	options := make([]string, 0)
+	s := bufio.NewScanner(r)
+	for s.Scan() {
+		options = append(options, s.Text())
+	}
+
+	var xx, yy int
+	var err error
+
+	for _, solution := range solutions {
+		for _, opt := range solution {
+			ss := strings.Split(options[opt], " ")
+			for j := range ss {
+				if ss[j][0] == 'x' {
+					xx, err = strconv.Atoi(ss[j][1:])
+					if err != nil {
+						panic(err)
+					}
+				}
+				if ss[j][0] == 'y' {
+					yy, err = strconv.Atoi(ss[j][1:])
+					if err != nil {
+						panic(err)
+					}
+				}
+			}
+			board[xx-1][yy-1] = 'X'
+		}
+
+		for i := range board {
+			for j := range board[i] {
+				fmt.Printf("%s ", string(board[i][j]))
+			}
+			fmt.Println()
+		}
+		fmt.Println()
+
+		// очистим поле
+		for i := range board {
+			row := make([]byte, x)
+			for j := range row {
+				row[j] = '.'
+			}
+			board[i] = row
+		}
+	}
 }

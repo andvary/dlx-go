@@ -20,4 +20,6 @@ func TestNRooks(t *testing.T) {
 	if len(solutions) != 40320 {
 		t.Fatal(err)
 	}
+
+	printBoard(8, 8, solutions[3100:3104], prepareMatrix(8, 8))
 }
