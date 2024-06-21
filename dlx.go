@@ -55,6 +55,28 @@ func (d *DLX) Solve() ([][]int, error) {
 	return d.solutions, nil
 }
 
+func (d *DLX) SolveString() ([][]string, error) {
+	if _, err := d.Solve(); err != nil {
+		return nil, err
+	}
+
+	if len(d.solutions) == 0 {
+		return nil, fmt.Errorf("no solutions found")
+	}
+
+	ss := make([][]string, len(d.solutions))
+
+	for i, sol := range d.solutions {
+		s := make([]string, len(sol))
+		for j, op := range sol {
+			s[j] = d.dumpOptions(op)
+		}
+		ss[i] = s
+	}
+
+	return ss, nil
+}
+
 func (d *DLX) PrintSolutions(maxSolutions int) error {
 	if _, err := d.Solve(); err != nil {
 		return err

@@ -5,6 +5,8 @@ import (
 	"dlx"
 	"fmt"
 	"io"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -23,12 +25,22 @@ func solveSudoku(in [][]byte) {
 		panic(err)
 	}
 
-	solutions, err := d.Solve()
+	solutions, err := d.SolveString()
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(solutions)
+	for i := range solutions {
+		for j := 1; j < len(solutions[i]); j++ {
+			cellNum, err := strconv.Atoi(strings.TrimSpace(solutions[i][j][3:5]))
+			if err != nil {
+				panic(err)
+			}
+			ii, jj := (cellNum-1)/9, (cellNum-1)%9
+			idx := strings.Index(solutions[i][j], "=")
+			in[ii][jj] = solutions[i][j][idx+1]
+		}
+	}
 }
 
 func prepareMatrix(in [][]byte) io.Reader {
@@ -101,4 +113,14 @@ func appendToInitialState(bb *bytes.Buffer, v string, i, j int) {
 
 	bb.WriteString(fmt.Sprintf("%s%d %s%d=%s %s%d=%s %s%d=%s ",
 		cell, cellNum, column, colNum, v, row, rowNum, v, square, squareNum, v))
+}
+
+func printBoard(in [][]byte) {
+	for n := range in {
+		fmt.Print("{")
+		for nn := range in[n] {
+			fmt.Printf("'%s',", string([]byte{in[n][nn]}))
+		}
+		fmt.Print("},\n")
+	}
 }
