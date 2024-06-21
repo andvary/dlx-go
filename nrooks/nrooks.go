@@ -12,6 +12,9 @@ import (
 func prepareMatrix(x, y int) io.Reader {
 	var bb bytes.Buffer
 
+	// Когда ладья ставится на клетку, она занимает одну горизонталь и одну вертикаль на доске.
+	// Соответственно, у нас будет всего 16 итемов: 8 для горизонталей и 8 для вертикалей.
+	// Ка
 	items := make([]string, 0, x+y)
 	for i := 1; i <= x; i++ {
 		items = append(items, fmt.Sprintf("x%d", i))
@@ -23,6 +26,8 @@ func prepareMatrix(x, y int) io.Reader {
 	bb.WriteString(strings.Join(items, " "))
 	bb.WriteByte('\n')
 
+	// Всего 64 опции, для каждой клетки, на которую можно поставить ладью. Если ладья ставится на клетку (0,0),
+	// добавляем опцию "X0 Y0". Если на (4,5) - "X4 Y5"
 	for i := 0; i < x; i++ {
 		for j := x; j < len(items); j++ {
 			bb.WriteString(items[i])
