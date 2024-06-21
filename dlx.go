@@ -1,5 +1,10 @@
 package dlx
 
+/*package dlx реализует алгоритм DLX Дональда Кнута.
+Материалы: https://www-cs-faculty.stanford.edu/~knuth/programs.html
+https://blog.demofox.org/2022/10/30/rapidly-solving-sudoku-n-queens-pentomino-placement-and-more-with-knuths-algorithm-x-and-dancing-links/
+*/
+
 import (
 	"fmt"
 	"io"
