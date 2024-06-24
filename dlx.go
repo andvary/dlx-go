@@ -30,7 +30,10 @@ type DLX struct {
 	solutions         [][]int
 	potentialSolution []int
 
-	debug bool
+	// Индекс в массиве items, на котором заканчиваются первичные (primary) итемы и начинаются вторичные
+	// (secondary).
+	primaryBoundary int
+	debug           bool
 }
 
 func New(r io.Reader, opts ...func(dlx *DLX)) (*DLX, error) {

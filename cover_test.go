@@ -134,6 +134,7 @@ func TestRemoveOption(t *testing.T) {
 	}
 
 	want := &DLX{
+		primaryBoundary: 7,
 		items: []*item{
 			{name: "", prev: 7, next: 1},          //0
 			{name: "a", prev: 0, next: 2, cnt: 2}, //1

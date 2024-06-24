@@ -50,8 +50,8 @@ OPTIONS:
 			}
 		}
 
-		// если список итемов пуст, решение найдено, проверим другие опции
-		if d.items[0].next == 0 {
+		// если список итемов пуст или остались только вторичные итемы, решение найдено, проверим другие опции
+		if d.items[0].next == 0 || d.items[0].next > d.primaryBoundary {
 
 			d.log("solution found")
 			d.addSolution()
@@ -152,15 +152,16 @@ func (d *DLX) removeOption(i int) error {
 	return nil
 }
 
-// findBestItem возвращает индекс первого неудалённого итема с наименьшим количеством опций.
-// Паникует, если в d.items нет ни одного итема, кроме корневого или у итема 0 опций.
+// findBestItem возвращает индекс первого неудалённого ПЕРВИЧНОГО итема с наименьшим количеством опций.
+// Паникует, если в d.items нет ни одного итема, кроме корневого или у итема 0 опций. Вторичные итемы
+// игнорируются.
 func (d *DLX) findBestItem() int {
 	best := d.items[0].next
 	if best == 0 {
 		panic("find best item: trying to find the best item in an empty items list")
 	}
 
-	for i := d.items[0].next; i != 0; i = d.items[i].next {
+	for i := d.items[0].next; i != 0 && i <= d.primaryBoundary; i = d.items[i].next {
 		if d.items[i].cnt == 0 {
 			panic(fmt.Sprintf("find best item: item %v has 0 options", d.items[i]))
 		}

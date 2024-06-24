@@ -15,7 +15,10 @@ import (
 // на предыдущий и следующий итем (вместо обычного указателя используется индекс в массиве).
 // Нулевой элемент массива с итемами всегда пустой, он служит для удобства обхода списка итемов.
 // Аналогично организованы опции. Здесь я немного отступаю от того, как сделано у кнута и храню спиок итемов, покрываемых
-// Каждой опцие в мапе, а не в ещё одном линкованном списке, что сильно упрощает код.
+// каждой опцией в мапе, а не в ещё одном линкованном списке, что сильно упрощает код.
+// Символ "|" разделяет первичные итемы (каждый из которых должен быть покрыт ровно одной опцией) и вторичные,
+// каждый из которых должен быть покрыт максимум одной опцией (т.е. может быть не покрыт).
+// На входе должен быть как минимум один первичный итем.
 func (d *DLX) readInput(r io.Reader) error {
 	var firstLine = true
 	d.opts = make([]*opt, 0)
@@ -85,29 +88,45 @@ func (d *DLX) readInput(r io.Reader) error {
 }
 
 func (d *DLX) addItems(bb [][]byte) error {
-	d.items = make([]*item, len(bb)+1)
+	d.items = make([]*item, 1)
 	// добавляем корневой элемент
 	d.items[0] = &item{
 		name: "",
-		prev: len(d.items) - 1,
 		next: 1,
 	}
 
 	for i := range bb {
+		if bytes.Equal(bb[i], []byte{'|'}) && i > 0 {
+			d.primaryBoundary = i
+			continue
+		}
+
+		if i == 0 && bytes.Equal(bb[i], []byte{'|'}) {
+			return InputError{
+				msg: fmt.Sprintf("item list must contain at least one primary item"),
+			}
+		}
+
 		if len(bb[i]) > 8 {
 			return InputError{
 				msg: fmt.Sprintf("bad item name %s (must be no more than 8 characters long)", bb[i]),
 			}
 		}
 
-		d.items[i+1] = &item{
+		d.items = append(d.items, &item{
 			name: string(bb[i]),
-			prev: i,
-			next: i + 2,
-		}
+			prev: len(d.items) - 1,
+			next: len(d.items) + 1,
+		})
 	}
 	// линкуем последний итем с первым
 	d.items[len(d.items)-1].next = 0
+	d.items[0].prev = len(d.items) - 1
+
+	// если вторичных итемов нет, не забываем выставить корректное значение primaryBoundary
+	if d.primaryBoundary == 0 {
+		d.primaryBoundary = len(d.items) - 1
+	}
 	return nil
 }
 
