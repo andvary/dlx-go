@@ -15,6 +15,7 @@ import (
 // Если есть итем(ы) без опций - это тупик, нужно откатываться.
 // Алгоритм, по сути, перебирает варианты, но работает быстро за счёт того, что удаление и восстановление опций и
 // итемов происходит// быстро (нужно только переписать указатели соседней).
+// TODO: попробовать ускорить на примере nqueens 14.
 func (d *DLX) cover(item int) error {
 	var removedOpts []int
 	var removedItems []int
@@ -69,7 +70,7 @@ OPTIONS:
 		}
 
 		// если есть неудалённые итемы без опций, значит решения нет
-		for it := d.items[0].next; it != 0; it = d.items[it].next {
+		for it := d.items[0].next; it != 0 && it <= d.primaryBoundary; it = d.items[it].next {
 			if d.items[it].cnt == 0 {
 
 				d.log(fmt.Sprintf("empty item %v found, dead end", d.items[it]))
