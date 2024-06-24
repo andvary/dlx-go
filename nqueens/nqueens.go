@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -46,4 +47,45 @@ func prepareMatrix(n int) io.Reader {
 	}
 
 	return &bb
+}
+
+func printBoard(s []string, n int) {
+	board := make([][]byte, n)
+	for i := range board {
+		board[i] = make([]byte, n)
+		for j := range board[i] {
+			board[i][j] = '.'
+		}
+	}
+
+	var x, y int
+	var err error
+
+	for i := range s {
+		opts := strings.Split(s[i], " ")
+		for j := range opts {
+			if opts[j][0] == 'x' {
+				x, err = strconv.Atoi(opts[j][1:])
+				if err != nil {
+					panic(err)
+				}
+			}
+			if opts[j][0] == 'y' {
+				y, err = strconv.Atoi(opts[j][1:])
+				if err != nil {
+					panic(err)
+				}
+			}
+		}
+		board[x][y] = 'Q'
+	}
+
+	for i := range board {
+		for j := range board[i] {
+			fmt.Print(string(rune(board[i][j])), " ")
+		}
+		fmt.Println()
+	}
+
+	fmt.Println()
 }

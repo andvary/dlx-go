@@ -76,13 +76,17 @@ func TestNQueens(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			solutions, err := d.Solve()
+			solutions, err := d.SolveString()
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			if len(solutions) != tc.want {
 				t.Fatalf("got %d solutions instead of %d", len(solutions), tc.want)
+			}
+
+			for i := 0; i < min(2, len(solutions)); i++ {
+				printBoard(solutions[i], tc.n)
 			}
 		})
 	}
