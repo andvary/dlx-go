@@ -69,7 +69,7 @@ func (d *DLX) SolveString() ([][]string, error) {
 	}
 
 	if len(d.solutions) == 0 {
-		return nil, fmt.Errorf("no solutions found")
+		return [][]string{}, nil
 	}
 
 	ss := make([][]string, len(d.solutions))
