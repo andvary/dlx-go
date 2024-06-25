@@ -1,7 +1,8 @@
 package dlx
 
 type bitvector struct {
-	v []uint64
+	v   []uint64
+	idx uint64
 }
 
 func newBitvector(n int) *bitvector {
@@ -12,17 +13,13 @@ func newBitvector(n int) *bitvector {
 }
 
 func (b *bitvector) add(n int) {
-	var pos, idx uint64
-	pos = uint64(n) >> 6
-	idx = 1 << (uint64(n) & 63)
-	b.v[pos] |= idx
+	b.idx = 1 << (uint64(n) & 63)
+	b.v[uint64(n)>>6] |= b.idx
 }
 
 func (b *bitvector) isPresent(n int) bool {
-	var pos, idx uint64
-	pos = uint64(n) >> 6
-	idx = 1 << (uint64(n) & 63)
-	if b.v[pos]&idx == idx {
+	b.idx = 1 << (uint64(n) & 63)
+	if b.v[uint64(n)>>6]&b.idx == b.idx {
 		return true
 	}
 	return false
