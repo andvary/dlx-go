@@ -47,6 +47,8 @@ func makesquare(m []int) bool {
 	}
 
 	// Потом выясним, можно ли, используя полученные выше варианты, сложить квадрат, используя при этом все спички.
+	// Здесь итемы это номера спичек, а опции - подмножества, найденные на первом шаге.
+	// Здесь нам достаточно одного решения.
 	d, err = dlx.New(prepareMatrix2(m, subsets), dlx.MaxSolutions(1))
 	if err != nil {
 		log.Print(err)
@@ -65,6 +67,8 @@ func makesquare(m []int) bool {
 func prepareMatrix(m []int, side int) io.Reader {
 	bb := bytes.Buffer{}
 
+	// Представим сторону квадрата как поле  размером 1xlen(side) клеток. Каждый первичный итем это одна клетка, которую
+	// может занять спичка. Соответственно, каждая опция определяет, какая спичка сколько клеток может занять.
 	for i := 0; i < side; i++ {
 		bb.WriteByte('p')
 		bb.WriteString(strconv.Itoa(i))
@@ -74,6 +78,8 @@ func prepareMatrix(m []int, side int) io.Reader {
 	bb.WriteByte('|')
 	bb.WriteByte(' ')
 
+	// Номер спички делаем вторичным, т.к. нам не обязательно использовать все, достаточно найти подможество, с суммой
+	// длин, равной стороне квадрата.
 	for i := range m {
 		bb.WriteByte('m')
 		bb.WriteString(strconv.Itoa(i))
