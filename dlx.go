@@ -8,6 +8,8 @@ https://blog.demofox.org/2022/10/30/rapidly-solving-sudoku-n-queens-pentomino-pl
 import (
 	"fmt"
 	"io"
+	"os"
+	"runtime/pprof"
 )
 
 type opt struct {
@@ -34,6 +36,8 @@ type DLX struct {
 	// (secondary).
 	primaryBoundary int
 	debug           bool
+	cpuProfile      string
+	maxSolutions    int
 }
 
 func New(r io.Reader, opts ...func(dlx *DLX)) (*DLX, error) {
@@ -55,7 +59,28 @@ func EnableDebugging() func(dlx *DLX) {
 	}
 }
 
+func EnableCPUProfile(path string) func(dlx *DLX) {
+	return func(d *DLX) {
+		d.cpuProfile = path
+	}
+}
+
+func MaxSolutions(m int) func(dlx *DLX) {
+	return func(d *DLX) {
+		d.maxSolutions = m
+	}
+}
+
 func (d *DLX) Solve() ([][]int, error) {
+	if d.cpuProfile != "" {
+		f, err := os.Create(d.cpuProfile)
+		if err != nil {
+			panic(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
 	bestItem := d.findBestItem()
 	if err := d.cover(bestItem); err != nil {
 		return nil, err
