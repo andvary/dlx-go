@@ -91,6 +91,10 @@ func TestMakeSquare(t *testing.T) {
 			in:   []int{20, 13, 19, 19, 4, 15, 10, 5, 5, 15, 14, 11, 3, 20, 11},
 			want: true,
 		},
+		"6": {
+			in:   []int{3, 1, 3, 3, 10, 7, 10, 3, 6, 9, 10, 3, 7, 6, 7},
+			want: true,
+		},
 	}
 
 	for name, tc := range tt {
