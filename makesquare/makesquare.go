@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"dlx"
 	"io"
+	"sort"
 	"strconv"
 )
 
+// makesquare дано: набор спичек, длины спичек представлены элементами в массиве m.
+// Нужно установить, можно ли, выложить из предложенных спичек квадрат. Ломать спички нельзя, соединять можно.
 func makesquare(m []int) bool {
 	if len(m) < 4 {
 		return false
@@ -29,7 +32,7 @@ func makesquare(m []int) bool {
 
 	matrix := prepareMatrix(m, sum/4)
 
-	d, err := dlx.New(matrix, dlx.MaxSolutions(1), dlx.EnableCPUProfile("D:\\Temp\\cpuprof"))
+	d, err := dlx.New(matrix, dlx.MaxSolutions(1))
 	if err != nil {
 		panic(err)
 	}
@@ -44,6 +47,9 @@ func makesquare(m []int) bool {
 
 func prepareMatrix(m []int, side int) io.Reader {
 	bb := bytes.Buffer{}
+
+	// Начинаем с самых длинных опций, неимоверно ускоряет работу.
+	sort.Ints(m)
 
 	for i := range m {
 		bb.WriteByte('m')

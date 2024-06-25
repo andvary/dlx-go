@@ -13,9 +13,11 @@ import (
 )
 
 type opt struct {
-	prev   int
-	next   int
-	items  []int
+	prev  int
+	next  int
+	items []int
+	// Нужен, чтобы быстро выяснить, покрывает ли данная опция некий итем. Этот вариант работает быстрее, чем
+	// поиск в мапе или бинарный поиск в сортированном массиве.
 	lItems *bitvector
 }
 
