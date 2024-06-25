@@ -13,9 +13,10 @@ import (
 )
 
 type opt struct {
-	prev  int
-	next  int
-	items map[int]struct{}
+	prev   int
+	next   int
+	items  []int
+	lItems *bitvector
 }
 
 type item struct {

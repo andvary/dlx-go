@@ -154,32 +154,32 @@ func TestRemoveOption(t *testing.T) {
 			{
 				prev:  0,
 				next:  2,
-				items: map[int]struct{}{3: {}, 5: {}, 6: {}},
+				items: []int{3, 5, 6},
 			},
 			{
 				prev:  0,
 				next:  3,
-				items: map[int]struct{}{1: {}, 4: {}, 7: {}},
+				items: []int{1, 4, 7},
 			},
 			{
 				prev:  2,
 				next:  4,
-				items: map[int]struct{}{2: {}, 3: {}, 6: {}},
+				items: []int{2, 3, 6},
 			},
 			{
 				prev:  3,
 				next:  5,
-				items: map[int]struct{}{1: {}, 4: {}},
+				items: []int{1, 4},
 			},
 			{
 				prev:  4,
 				next:  6,
-				items: map[int]struct{}{2: {}, 7: {}},
+				items: []int{2, 7},
 			},
 			{
 				prev:  5,
 				next:  0,
-				items: map[int]struct{}{4: {}, 5: {}, 7: {}},
+				items: []int{4, 5, 7},
 			},
 		},
 	}

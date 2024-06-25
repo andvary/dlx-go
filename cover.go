@@ -27,7 +27,7 @@ OPTIONS:
 			return nil
 		}
 
-		if _, ok := d.opts[i].items[item]; !ok {
+		if !d.opts[i].lItems.isPresent(item) {
 			continue
 		}
 
@@ -36,7 +36,7 @@ OPTIONS:
 		d.log("starting with option: " + d.dumpOptions(i))
 
 		// удалим все итемы, покрытые опцией
-		for j := range d.opts[i].items {
+		for _, j := range d.opts[i].items {
 			if err := d.removeItem(j); err != nil {
 				return fmt.Errorf("cover: %v", err)
 			}
@@ -44,7 +44,7 @@ OPTIONS:
 
 			// удалим все опции с удалённым итемом
 			for o := d.opts[0].next; o != 0; o = d.opts[o].next {
-				if _, ok := d.opts[o].items[j]; !ok {
+				if !d.opts[o].lItems.isPresent(j) {
 					continue
 				}
 
@@ -120,7 +120,7 @@ func (d *DLX) restoreItems(ri []int) {
 func (d *DLX) restoreOptions(ro []int) {
 	for i := len(ro) - 1; i >= 0; i-- {
 		d.opts[d.opts[ro[i]].next].prev, d.opts[d.opts[ro[i]].prev].next = ro[i], ro[i]
-		for j := range d.opts[ro[i]].items {
+		for _, j := range d.opts[ro[i]].items {
 			d.items[j].cnt++
 		}
 	}
@@ -151,7 +151,7 @@ func (d *DLX) removeOption(i int) error {
 
 	d.opts[d.opts[i].prev].next, d.opts[d.opts[i].next].prev = d.opts[i].next, d.opts[i].prev
 
-	for j := range d.opts[i].items {
+	for _, j := range d.opts[i].items {
 		d.items[j].cnt--
 	}
 	return nil

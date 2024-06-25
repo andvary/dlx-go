@@ -40,7 +40,10 @@ func (d *DLX) readInput(r io.Reader) error {
 			continue
 		}
 
-		o := &opt{items: make(map[int]struct{})}
+		o := &opt{
+			items:  make([]int, 0, len(bb)),
+			lItems: newBitvector(len(d.items)),
+		}
 
 		// добавляем итемы в опцию
 		for i, itemName := range bb {
@@ -56,7 +59,8 @@ func (d *DLX) readInput(r io.Reader) error {
 					msg: fmt.Sprintf("option refers to a no-existent item %q", itemName),
 				}
 			}
-			o.items[n] = struct{}{}
+			o.items = append(o.items, n)
+			o.lItems.add(n)
 			// увеличиваем количество опций, покрывающих этот итем
 			d.items[n].cnt++
 		}

@@ -29,7 +29,7 @@ func makesquare(m []int) bool {
 
 	matrix := prepareMatrix(m, sum/4)
 
-	d, err := dlx.New(matrix, dlx.MaxSolutions(1), dlx.EnableCPUProfile("D:\\Temp\\cpuprof"))
+	d, err := dlx.New(matrix, dlx.MaxSolutions(1), dlx.EnableCPUProfile("D:\\Temp\\cpuprof2"))
 	if err != nil {
 		panic(err)
 	}
