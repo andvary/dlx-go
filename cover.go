@@ -23,7 +23,7 @@ func (d *DLX) cover(item int) error {
 	// найдём неудалённую опцию, покрывающую заданный итем
 OPTIONS:
 	for i := d.opts[0].next; i != 0; i = d.opts[i].next {
-		if len(d.solutions) >= d.maxSolutions {
+		if d.maxSolutions != 0 && len(d.solutions) >= d.maxSolutions {
 			return nil
 		}
 

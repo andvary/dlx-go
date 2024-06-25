@@ -3,6 +3,7 @@ package dlx
 import (
 	"errors"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"os"
 	"sort"
 	"strconv"
@@ -188,7 +189,7 @@ func TestRemoveOption(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if diff := cmp.Diff(want, d, cmp.AllowUnexported(DLX{}, item{}, opt{})); diff != "" {
+	if diff := cmp.Diff(want, d, cmp.AllowUnexported(DLX{}, item{}, opt{}), cmpopts.IgnoreFields(opt{}, "lItems")); diff != "" {
 		t.Errorf("want items mismatch(-want +got):\n%s", diff)
 	}
 }

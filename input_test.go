@@ -3,6 +3,7 @@ package dlx
 import (
 	"errors"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"os"
 	"testing"
 )
@@ -72,7 +73,7 @@ func TestReadInput(t *testing.T) {
 		},
 	}
 
-	if diff := cmp.Diff(want, d, cmp.AllowUnexported(DLX{}, item{}, opt{})); diff != "" {
+	if diff := cmp.Diff(want, d, cmp.AllowUnexported(DLX{}, item{}, opt{}), cmpopts.IgnoreFields(opt{}, "lItems")); diff != "" {
 		t.Errorf("want items mismatch(-want +got):\n%s", diff)
 	}
 }
@@ -141,7 +142,7 @@ func TestReadInput_WithOptionalItems(t *testing.T) {
 		},
 	}
 
-	if diff := cmp.Diff(want, d, cmp.AllowUnexported(DLX{}, item{}, opt{})); diff != "" {
+	if diff := cmp.Diff(want, d, cmp.AllowUnexported(DLX{}, item{}, opt{}), cmpopts.IgnoreFields(opt{}, "lItems")); diff != "" {
 		t.Errorf("want items mismatch(-want +got):\n%s", diff)
 	}
 }

@@ -135,6 +135,10 @@ func (d *DLX) addItems(bb [][]byte) error {
 }
 
 func (d *DLX) getItem(name string) int {
+	if name == "" {
+		return -1
+	}
+
 	for i := range d.items {
 		if d.items[i].name == name {
 			return i

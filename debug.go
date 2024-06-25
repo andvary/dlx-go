@@ -20,7 +20,7 @@ func (d *DLX) dumpOptions(opts ...int) string {
 	b := strings.Builder{}
 	var items []string
 	for _, i := range opts {
-		for j := range d.opts[i].items {
+		for _, j := range d.opts[i].items {
 			items = append(items, d.items[j].name)
 		}
 		sort.Strings(items)
