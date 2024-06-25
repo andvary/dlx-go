@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"dlx"
 	"io"
-	"sort"
+	"log"
 	"strconv"
+	"strings"
 )
 
 // makesquare дано: набор спичек, длины спичек представлены элементами в массиве m.
@@ -30,16 +31,32 @@ func makesquare(m []int) bool {
 		}
 	}
 
+	// сначала найдём все возможные варианты сложить отрезок длиной side из имеющихся спичек
 	matrix := prepareMatrix(m, sum/4)
 
-	d, err := dlx.New(matrix, dlx.MaxSolutions(1))
+	d, err := dlx.New(matrix)
 	if err != nil {
-		panic(err)
+		log.Print(err)
+		return false
+	}
+
+	subsets, err := d.SolveString()
+	if err != nil {
+		log.Print(err)
+		return false
+	}
+
+	// потом выясним, можно ли, используя полученные выше варианты, сложить квадрат, используя при этом все спички
+	d, err = dlx.New(prepareMatrix2(m, subsets), dlx.MaxSolutions(1))
+	if err != nil {
+		log.Print(err)
+		return false
 	}
 
 	res, err := d.Solve()
 	if err != nil {
-		panic(err)
+		log.Print(err)
+		return false
 	}
 
 	return len(res) > 0
@@ -48,8 +65,14 @@ func makesquare(m []int) bool {
 func prepareMatrix(m []int, side int) io.Reader {
 	bb := bytes.Buffer{}
 
-	// Начинаем с самых длинных опций, неимоверно ускоряет работу.
-	sort.Ints(m)
+	for i := 0; i < side; i++ {
+		bb.WriteByte('p')
+		bb.WriteString(strconv.Itoa(i))
+		bb.WriteByte(' ')
+	}
+
+	bb.WriteByte('|')
+	bb.WriteByte(' ')
 
 	for i := range m {
 		bb.WriteByte('m')
@@ -57,35 +80,48 @@ func prepareMatrix(m []int, side int) io.Reader {
 		bb.WriteByte(' ')
 	}
 
-	for i := 0; i < side*4; i++ {
-		bb.WriteByte('p')
-		bb.WriteString(strconv.Itoa(i))
-		bb.WriteByte(' ')
-	}
-
 	bb.WriteByte('\n')
-
-	sides := [4]int{0, side, side * 2, side * 3}
 
 	for i := range m {
 
 		positions := getPositions(m[i], side)
-		for _, s := range sides {
-			for _, pp := range positions {
-				bb.WriteByte('m')
-				bb.WriteString(strconv.Itoa(i))
+
+		for _, pp := range positions {
+			bb.WriteByte('m')
+			bb.WriteString(strconv.Itoa(i))
+			bb.WriteByte(' ')
+
+			for _, p := range pp {
+				bb.WriteByte('p')
+				bb.WriteString(strconv.Itoa(p))
 				bb.WriteByte(' ')
-
-				for _, p := range pp {
-					bb.WriteByte('p')
-					bb.WriteString(strconv.Itoa(p + s))
-					bb.WriteByte(' ')
-				}
-
-				bb.WriteByte('\n')
 			}
-		}
 
+			bb.WriteByte('\n')
+		}
+	}
+
+	return &bb
+}
+
+func prepareMatrix2(m []int, subsets [][]string) io.Reader {
+	bb := bytes.Buffer{}
+
+	for i := range m {
+		bb.WriteByte('m')
+		bb.WriteString(strconv.Itoa(i))
+		bb.WriteByte(' ')
+	}
+	bb.WriteByte('\n')
+
+	var idx int
+	for i := range subsets {
+		for j := range subsets[i] {
+			idx = strings.Index(subsets[i][j], " ")
+			bb.WriteString(subsets[i][j][:idx])
+			bb.WriteByte(' ')
+		}
+		bb.WriteByte('\n')
 	}
 
 	return &bb
